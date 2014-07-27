@@ -1,0 +1,49 @@
+The aftermath of the last week air crashes : A study of aviation safety
+========================================================
+title: The aftermath of the last week air crashes : A study of aviation safety
+author: Santosh GSK
+date: 27 July 2014
+
+Introduction
+========================================================
+
+- More travelers have perished in plane crashes over the past week than did during all of 2013. Despite that, air travel remains one of the safest forms of travel, so there's little reason for consumers to ground their trips. 
+- This shiny app aims at analyzing the Aviation safety over the past 10 years and gives some interesting observations as trends of fatalities/incidents depending on month, year and the category of the accident.
+- This app lets the user to decide the parameter for analyzing the airlines data.
+
+Collecting Data
+========================================================
+- The data for this app is the accidents/incidents data collected from Aviation Safety Network for the period of 2005-till date.
+- The data collected includes the following columns:
+    - Year of Incident
+    - Number of Fatalities
+    - Month of Incident
+    - Category
+- The Category field describes the type of accident, i.e., Accident, Incident, Hijacking, Criminal occurrence, etc. The categories are further associated with their severity. 
+
+Data Visualization
+========================================================
+```{r, echo=FALSE}
+airline <- read.csv("airliner-data.csv")
+m <- gregexpr("[a-zA-Z]{3}", airline$date, perl=TRUE)
+airline$month <- tolower(regmatches(airline$date, m))
+m <- gregexpr("-[0-9]{2,4}", airline$date, perl=TRUE)
+tempYr <- regmatches(airline$date, m)
+tempYr <- gsub("-0", "200", tempYr)
+tempYr <- gsub("-1", "201", tempYr)
+tempYr <- gsub("-", "", tempYr)
+airline$year <- tempYr
+airline <- airline[ifelse(airline$month=="character(0)", FALSE, TRUE),]
+v <- as.character(airline$fat.)
+airline$fatalities <- sapply(strsplit(v, split=c("+"), fixed=T), function(x) {sum(as.numeric(x))})
+```
+The data used for this app can be visualized as follows
+```{r}
+str(airline[,c(3:6)])
+```
+
+Observations
+========================================================
+- The number of fatalities has seen a declining curve with the year barring two anamolies. This trend strongly suggests that the aviation safety is increased over the years.
+- An interesting observation is that during the months of May to September, usually identified to be season of bad weather with monsoons and low visibility, the number of fatalities are highly and positively correlated.  
+- On the other hand, in the Category variable, the Accidents take the lion's share of fatalities followed by Criminal occurrences like shootdown. Interestingly, Hijacking showcased to be less severe.
